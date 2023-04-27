@@ -1,0 +1,45 @@
+<form
+    [formGroup]="Form.form"
+    #form="ngForm"
+    (ngSubmit)="onSubmit(Form.form)">
+    <p
+        *ngIf="Form.nonFieldErrors as error"
+        class="text-danger">*{{ error }}</p>
+
+    <div class="form-group">
+        <label for="email-input">Email</label>
+        <input
+            formControlName="email"
+            type="email"
+            class="form-control mt-1"
+            id="email-input"
+            placeholder="Enter your email">
+        <small
+            *ngIf="Form.displayError('email') as error"
+            class="text-danger">{{ error }}</small>
+    </div>
+    <div class="form-group mt-3">
+        <label for="password-input">Password</label>
+        <input
+            formControlName="password"
+            type="password"
+            class="form-control mt-1"
+            id="password-input"
+            placeholder="••••••••">
+        <small
+            *ngIf="Form.displayError('password') as error"
+            class="text-danger">{{ error }}</small>
+    </div>
+    <div class="d-flex justify-content-between align-items-center py-3">
+        <div class="form-group d-flex align-items-center">
+            <input class="form-check-input me-2" type="checkbox" id="remember-checkbox">
+            <label for="remember-checkbox">Remember me</label>
+        </div>
+        <div>
+            <a href="" class="btn text-primary">Forgot Password</a>
+        </div>
+    </div>
+    <button
+        type="submit"
+        class="btn btn-primary w-100 py-2 btn-login">Login</button>
+</form>
