@@ -53,11 +53,10 @@
 
                 <div class="form-group mt-3">
                     <label>Status</label>
-                    <input
-                        formControlName="status"
-                        type="text"
-                        class="form-control"
-                        placeholder="Enter the status" />
+                    <select formControlName="status" class="form-control">
+                        <option value="active">Active</option>
+                        <option value="inactive">In-active</option>
+                    </select>
                     <small
                         *ngIf="Form.displayError('status') as error"
                         class="text-danger">{{ error }}</small>

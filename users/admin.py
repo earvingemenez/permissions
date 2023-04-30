@@ -65,7 +65,8 @@ class RolePermissionAdmin(admin.ModelAdmin):
 class RolePermissionAttributeAdmin(admin.ModelAdmin):
     """ role permission attr admin
     """
-    list_display = ('role_permission', 'field_name', 'parent', 'model')
+    list_display = ('role_permission', 'field_name',
+        'parent', 'model', 'can_add', 'can_edit', 'can_delete', 'can_view')
     inlines = (RolePermissionAttributeInline,)
 
 

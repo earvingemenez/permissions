@@ -26,7 +26,7 @@
                         </th>
                         <td>{{ company.status }}</td>
                         <td>{{ company.country }}</td>
-                        <td>{{ company.company_type?.desc }}</td>
+                        <td>{{ companyType(company.company_type)?.desc }}</td>
                         <td class="d-flex justify-content-around align-items-center">
                             <a uiSref="company-edit" [uiParams]="{id: company.id}">Edit</a>
                             <a uiSref="false" (click)="delete(company.id)">Delete</a>

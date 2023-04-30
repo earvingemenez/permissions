@@ -48,6 +48,9 @@ class RBACExtendedRestrictionSerializer(RBACPermissionHelper):
     """ helper class to handle updating child
         instances.
     """
+    def __check_dict(self, dict_):
+        return len(dict_.keys()) == 1 and 'id' in dict_.keys()
+
     def __save_except(self, value):
         try:
             return value.save() or value
@@ -80,16 +83,15 @@ class RBACExtendedRestrictionSerializer(RBACPermissionHelper):
         """
         # check if the key-value set is an FK of the
         # instance
-        if type(value) == int and \
-            type(getattr(self.instance, field_name)) != int:
-            return get_object_or_none(self.get_model(field_name), id=value)
+        if type(getattr(self.instance, field_name)) != int:
+            return get_object_or_none(self.get_model(field_name), id=value['id'])
         return value
         
     def to_internal_value(self, data):
         # filter all nested datasets and validate them based on
         # RBAC extended permission from parent permission.
         for key, value in data.items():
-            if type(value) == dict:
+            if type(value) == dict and not self.__check_dict(value):
                 # validate if the data are correct or allowed
                 # based on their permission.
                 serializer = self.get_serializer_class_(key)(
@@ -102,7 +104,7 @@ class RBACExtendedRestrictionSerializer(RBACPermissionHelper):
                 serializer.is_valid(raise_exception=True)
                 data[key] = serializer
 
-            if type(value) == int:
+            if type(value) == dict and self.__check_dict(value):
                 data[key] = self._to_instance(key, value)
 
         return data

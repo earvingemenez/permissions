@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { CompaniesService } from 'src/app/commons/services/companies/companies.service';
 import { CompanyService } from 'src/app/commons/services/companies/company.service';
-import { Company } from 'src/app/commons/models/companies.model';
+import { Company, CompanyType } from 'src/app/commons/models/companies.model';
 
 @Component({
   selector: 'app-companies',
@@ -17,8 +17,13 @@ export class CompaniesComponent implements OnInit {
   ) { }
 
   companies = [] as Company[];
+  companyTypes = [] as CompanyType[];
 
   ngOnInit(): void {
+    this.$companies.companyTypes()
+      .then((resp) => this.companyTypes = resp)
+    ;
+
     this.load();
   }
 
@@ -36,6 +41,10 @@ export class CompaniesComponent implements OnInit {
     this.$companies.list()
       .then((resp) => this.companies = resp)
     ;
+  }
+
+  companyType(id: number) {
+    return this.companyTypes.find(i => i.id===id);
   }
 
 }

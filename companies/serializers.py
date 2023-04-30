@@ -33,8 +33,8 @@ class CompanySerializer(RBACRestrictedSerializer, ModelSerializer):
 
     def to_representation(self, instance):
         resp = super().to_representation(instance)
-        resp.update({
-            'company_type': CompanyTypeSerializer(instance.company_type).data,
-        })
+        # resp.update({
+        #     'company_type': CompanyTypeSerializer(instance.company_type).data,
+        # })
 
         return resp

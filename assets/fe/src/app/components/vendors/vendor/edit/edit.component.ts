@@ -53,7 +53,7 @@ export class EditComponent implements OnInit {
     // fetch the vendor details
     this.$vendor.get(this.vendorId)
       .then((resp) => {
-        this.Form.patchValue(resp);
+        this.Form.form.patchValue(resp);
       })
     ;
   }
@@ -61,7 +61,7 @@ export class EditComponent implements OnInit {
   onSubmit({value, valid}: {value: Vendor, valid: boolean}) {
     if(!valid) return this.Form.form.markAllAsTouched();
 
-    Object.assign(value, {'company': {'id': value.company, 'company_type': 2}})
+    //Object.assign(value, {'company': {'id': value.company, 'company_type': 2}})
 
     this.$vendor.update(this.vendorId, value)
       .then((resp) => {
