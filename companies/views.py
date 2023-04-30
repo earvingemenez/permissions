@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from utils.query import SerializerProperty
-from .serializers import CompanySerializer
+from .serializers import CompanySerializer, CompanyTypeSerializer
 
 from users.permissions import RBACPermission
 
@@ -20,7 +20,6 @@ class Companies(SerializerProperty, GenericViewSet):
             self.model.objects.filter(
                 **request.query_params.dict()),
             many=True,
-            auth_user=request.user
         )
         return Response(serializer.data, status=200)
 
@@ -48,7 +47,8 @@ class Company(SerializerProperty, GenericViewSet):
     def update(self, request, **kwargs):
         serializer = self.serializer_class(
             data=request.data,
-            instance=get_object_or_404(self.model, **kwargs)
+            instance=get_object_or_404(self.model, **kwargs),
+            auth_user=request.user,
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -58,3 +58,16 @@ class Company(SerializerProperty, GenericViewSet):
     def delete(self, request, **kwargs):
         get_object_or_404(self.model, **kwargs).delete()
         return Response(status=204)
+
+
+class CompanyTypes(SerializerProperty, GenericViewSet):
+    """ company types endpoint
+    """
+    serializer_class = CompanyTypeSerializer
+
+    def get(self, request, **kwargs):
+        serializer = self.serializer_class(
+            self.model.objects.filter(),
+            many=True
+        )
+        return Response(serializer.data, status=200)

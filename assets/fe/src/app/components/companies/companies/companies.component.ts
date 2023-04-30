@@ -19,19 +19,19 @@ export class CompaniesComponent implements OnInit {
   companies = [] as Company[];
 
   ngOnInit(): void {
-    this._load();
+    this.load();
   }
 
   delete(id: number) {
     this.$company.delete(id)
       .then((resp) => {
         alert("Company has been deleted.");
-        this._load();
+        this.load();
       })
     ;
   }
 
-  _load(): void {
+  load(): void {
     // load the company list
     this.$companies.list()
       .then((resp) => this.companies = resp)

@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { API_COMPANIES } from 'src/app/commons/constants/api.constant';
-import { Company } from 'src/app/commons/models/companies.model';
+import { Company, CompanyType } from 'src/app/commons/models/companies.model';
+import { urlsafe } from 'src/app/commons/utils/http.util';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,13 @@ export class CompaniesService {
       .toPromise()
     ;
     return resp as Company;
+  }
+
+  async companyTypes() {
+    const resp = await this.$http.get(urlsafe(API_COMPANIES, 'types'))
+      .toPromise()
+    ;
+    return resp as CompanyType[];
   }
 
 }

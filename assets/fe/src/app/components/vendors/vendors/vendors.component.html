@@ -1,0 +1,40 @@
+<div class="container">
+    <div class="row">
+
+        <div class="section__head d-flex justify-content-between align-items-center">
+            <h1>Vendors</h1>
+            <button type="button" class="btn btn-primary" uiSref="">Add New</button>
+        </div>
+
+        <div class="section__body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Vendor Type</th>
+                        <th scope="col">Company</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let vendor of vendors">
+                        <th scope="row">
+                            <a
+                                uiSref="vendor-detail"
+                                [uiParams]="{id: vendor.id}">
+                                {{ vendor.name }}
+                            </a>
+                        </th>
+                        <td>{{ vendor.vendor_type.name }}</td>
+                        <td>{{ vendor.company.name }}</td>
+                        <td class="d-flex justify-content-around align-items-center">
+                            <a uiSref="vendor-edit" [uiParams]="{id: vendor.id}">Edit</a>
+                            <a uiSref="false" (click)="delete(vendor.id)">Delete</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>

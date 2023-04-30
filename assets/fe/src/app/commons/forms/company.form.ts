@@ -7,7 +7,7 @@ export class CompanyForm extends Form {
     const fields: any = {
       name: new UntypedFormControl(null, [Validators.required]),
       country: new UntypedFormControl(null, [Validators.required]),
-      type: new UntypedFormControl(null, []),
+      company_type: new UntypedFormControl(null, [Validators.required]),
       status: new UntypedFormControl(null, [Validators.required]),
     }
     super(fields);

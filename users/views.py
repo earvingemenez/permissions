@@ -6,7 +6,10 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from .serializers import LoginSerializer, PermissionSerializer
+from .serializers import (
+    LoginSerializer,
+    RoleSerializer,
+)
 
 
 class Login(GenericViewSet):
@@ -27,10 +30,10 @@ class Login(GenericViewSet):
 class Permissions(GenericViewSet):
     """ user permission/access
     """
-    serializer_class = PermissionSerializer
+    serializer_class = RoleSerializer
 
     def queryset(self, request):
         serializer = self.serializer_class(
-            request.user.permissions.filter(), many=True)
+            request.user.roles.filter(), many=True)
 
         return Response(serializer.data, status=200)

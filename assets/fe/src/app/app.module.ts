@@ -4,9 +4,12 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { UIRouterModule } from '@uirouter/angular';
 
+import { GlobalsModule } from 'src/app/components/globals/globals.module';
 import { PublicModule } from 'src/app/components/public/public.module';
 import { UsersModule } from 'src/app/components/users/users.module';
+import { VendorsModule } from 'src/app/components/vendors/vendors.module';
 import { CompaniesModule } from 'src/app/components/companies/companies.module';
+
 
 import { TokenService } from 'src/app/commons/services/interceptors/token.service';
 
@@ -21,8 +24,10 @@ import { APP_ROUTES } from './app.route';
     BrowserModule,
     HttpClientModule,
     UIRouterModule.forRoot(APP_ROUTES),
+    GlobalsModule,
     PublicModule,
     UsersModule,
+    VendorsModule,
     CompaniesModule,
   ],
   providers: [

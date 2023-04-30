@@ -1,5 +1,8 @@
 from django.urls import path, include
-from .views import Login, Permissions
+from .views import (
+    Login,
+    Permissions,
+)
 
 urlpatterns = [
     path('login/', Login.as_view({

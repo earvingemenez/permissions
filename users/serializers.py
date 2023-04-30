@@ -4,7 +4,8 @@ from rest_framework import serializers
 from rest_framework.serializers import Serializer, ModelSerializer
 
 from utils.query import get_object_or_none
-from .models import Access, AccessField
+from .models import Role, RolePermission, RolePermissionAttribute
+
 
 class LoginSerializer(Serializer):
     """ authenicate user
@@ -42,25 +43,50 @@ class LoginSerializer(Serializer):
         return resp
 
 
-class FieldSerializer(serializers.ModelSerializer):
-    """ access field
+class PermissionAttributeSerializer(ModelSerializer):
+    """ role permission attr
     """
     class Meta:
-        model = AccessField
-        fields = ('name', 'can_view', 'can_change')
+        model = RolePermissionAttribute
+        fields = (
+            'id',
+            'role_permission',
+            'field_name',
+            'can_add',
+            'can_edit',
+            'can_delete',
+            'can_view',
+        )
 
 
-class PermissionSerializer(serializers.ModelSerializer):
-    """ user access
+class PermissionSerializer(ModelSerializer):
+    """ role permission serializer
     """
-    fields = FieldSerializer(many=True)
+    role_permission_attrs = PermissionAttributeSerializer(many=True, read_only=True)
 
     class Meta:
-        model = Access
+        model = RolePermission
         fields = (
             'id',
             'module',
             'can_add',
+            'can_edit',
             'can_delete',
-            'fields',
+            'can_view',
+            'role_permission_attrs',
+        )
+
+
+class RoleSerializer(ModelSerializer):
+    """ role serializer
+    """
+    role_permissions = PermissionSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Role
+        fields = (
+            'id',
+            'name',
+            'description',
+            'role_permissions',
         )

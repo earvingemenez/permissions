@@ -29,6 +29,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
+    roles = models.ManyToManyField('users.Role', blank=True)
+
     objects = UserManager()
 
     USERNAME_FIELD = "email"
@@ -54,25 +56,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         
         return token
 
-    def get_permission(self, model):
-        """ return the list of permission from
-            the specified model
-        """
-        x = ContentType.objects.get_for_model(model)
 
-        return get_user_or_denied(
-            apps.get_model('users.Access'), model=x, user=self)
-
-
-class AccessField(models.Model):
-    """ user permission per field/data
+class Role(models.Model):
+    """ user role
     """
-    access = models.ForeignKey('users.Access',
-        related_name="fields", on_delete=models.CASCADE)
-    
-    name = models.CharField(max_length=30)
-    can_view = models.BooleanField(default=True)
-    can_change = models.BooleanField(default=True)
+    name = models.CharField(max_length=100)
+    description = models.TextField()
 
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
@@ -80,26 +69,31 @@ class AccessField(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+    def get_permission(self, model):
+        """ get the user's permission instance
+            on a specific model/module
+        """
+        return get_user_or_denied(
+            apps.get_model('users.RolePermission'),
+            model=ContentType.objects.get_for_model(model),
+            role=self
+        )
 
-class Access(models.Model):
-    """ user permission
+
+class RolePermission(models.Model):
+    """ role permission
     """
-    user = models.ForeignKey(get_user_model(),
-        related_name="permissions", on_delete=models.CASCADE)
+    role = models.ForeignKey('users.Role',
+        related_name="role_permissions", on_delete=models.CASCADE)
     model = models.ForeignKey(ContentType, on_delete=models.CASCADE)
 
-    can_add = models.BooleanField(default=True)
+    can_add = models.BooleanField(default=True) 
+    can_edit = models.BooleanField(default=True)
     can_delete = models.BooleanField(default=True)
     can_view = models.BooleanField(default=True)
 
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name_plural = "Access"
-
     def __str__(self):
-        return f"({self.user}) {self.model}"
+        return f"{self.role} | {self.model}"
 
     @property
     def module(self):
@@ -110,22 +104,24 @@ class Access(models.Model):
         """ return the list of safe request methods
             based on the user's permission configuration
         """
-        _SAFE_METHODS = ('POST', 'DELETE', 'GET')
+        _SAFE_METHODS = ('POST', 'PUT', 'DELETE', 'GET')
 
         def __validate():
-            for i, perm in enumerate([self.can_add, self.can_delete, self.can_view]):
+            for i, perm in enumerate([self.can_add,
+                self.can_edit, self.can_delete, self.can_view]):
                 if perm: yield _SAFE_METHODS[i]
-
+        
         return list(__validate())
 
-    def changeable_fields(self):
-        """ return fields that can be changed by
-            the user based on the granted access
+    def editable_fields(self):
+        """ return fields that can be edited by the
+            user based on the granted access
         """
-        return list(i.name for i in self.fields.filter(can_change=True))
+        return list(i.field_name for i in \
+            self.role_permission_attrs.filter(can_edit=True))
 
 
-@receiver(post_save, sender=Access)
+@receiver(post_save, sender=RolePermission)
 def after_save(instance=None, created=False, **kwargs):
     """ signal after the instance is save
     """
@@ -133,5 +129,35 @@ def after_save(instance=None, created=False, **kwargs):
         # generate the access fields based on
         # the model fields.
         for name in get_fields(instance.model.model_class()):
-            AccessField.objects.create(access=instance, name=name)
+            apps.get_model('users.RolePermissionAttribute').objects \
+                .create(role_permission=instance, field_name=name)
 
+
+class RolePermissionAttribute(models.Model):
+    """ role permission attribute
+    """
+    parent = models.ForeignKey('self', related_name="child_perm_attrs",
+        null=True, blank=True, on_delete=models.SET_NULL)
+    model = models.ForeignKey(ContentType, null=True, blank=True, on_delete=models.SET_NULL)
+    
+    role_permission = models.ForeignKey('users.RolePermission',
+        related_name="role_permission_attrs", on_delete=models.CASCADE)
+    field_name = models.CharField(max_length=50)
+
+    can_add = models.BooleanField(default=True)
+    can_edit = models.BooleanField(default=True)
+    can_delete = models.BooleanField(default=True)
+    can_view = models.BooleanField(default=True)
+
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.field_name}"
+
+    def editable_fields(self):
+        """ return the fields that can be edited by user
+            based on this child attr.
+        """
+        return list(i.field_name for i in \
+            self.child_perm_attrs.filter(can_edit=True))

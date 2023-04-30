@@ -22,7 +22,7 @@ export class CompanyService {
   }
 
   async update(id: number, data: Company) {
-    const resp = await this.$http.post(urlsafe(API_COMPANIES, id), data)
+    const resp = await this.$http.put(urlsafe(API_COMPANIES, id), data)
       .toPromise()
     ;
     return resp as Company;

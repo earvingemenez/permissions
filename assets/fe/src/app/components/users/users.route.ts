@@ -5,6 +5,7 @@ export const USERS_ROUTES: Ng2StateDeclaration[] = [
   {
     name: 'users-dashboard',
     url: '/dashboard',
+    parent: 'side-content',
     component: DashboardComponent
   },
 ]

@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include([
         path('users/', include('users.urls')),
+        path('vendors/', include('vendors.urls')),
         path('companies/', include('companies.urls')),
     ]))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

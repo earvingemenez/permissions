@@ -160,4 +160,15 @@ export class Form extends FormError {
     return objectToFormData(this.form.value)
   }
 
+  patchValue(instance: any) {
+    
+    for(let key of Object.keys(instance)) {
+      if(typeof instance[key] === 'object') {
+        instance[key] = instance[key].id;
+      }
+    }
+
+    this.#form.patchValue(instance);
+  }
+
 }
